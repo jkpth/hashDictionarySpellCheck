@@ -99,7 +99,6 @@ public class MisSpellActionThread implements Runnable {
         try {
             // >>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             input = new Scanner(new File(theFileName));
-            AList<Wordlet> wordlets = new AList<>(); //Create a new AList to store all wordlets
 
             while(input.hasNextLine()) {
                 String line = input.nextLine();
@@ -110,7 +109,7 @@ public class MisSpellActionThread implements Runnable {
                         String lowerCaseWord = word.toLowerCase();
                         boolean isCorrect = checkWord(lowerCaseWord, theDictionary);
                         //System.out.println(lowerCaseWord + " is spelled correctly " + isCorrect);
-                        wordlets.add(new Wordlet(word, isCorrect));
+                        myLines.addWordlet(new Wordlet(word, isCorrect));
 
                     }
                 }
