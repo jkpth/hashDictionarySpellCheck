@@ -68,7 +68,16 @@ public class MisSpellActionThread implements Runnable {
 // ADD CODE HERE
 // >>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+            input = new Scanner(new File(theFileName));
 
+            while(input.hasNextLine()){
+                String line = input.nextLine();
+                if(!line.isEmpty()) {
+                    theDictionary.add(line, line);
+                }
+            }
+            input.close();
+            dictionaryLoaded = true;
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
          
 
@@ -88,14 +97,26 @@ public class MisSpellActionThread implements Runnable {
     public void checkWords(String theFileName, DictionaryInterface<String, String> theDictionary) {
         Scanner input;
         try {
- 
-// ADD CODE HERE
-// >>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            // >>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+            input = new Scanner(new File(theFileName));
+            AList<Wordlet> wordlets = new AList<>(); //Create a new AList to store all wordlets
 
+            while(input.hasNextLine()) {
+                String line = input.nextLine();
+                String[] words = line.split("\\W+"); //Split by non-word characters
 
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+                for(String word : words) { //Check each word to see if it is in dictionary
+                    if(!word.isEmpty()) {
+                        String lowerCaseWord = word.toLowerCase();
+                        boolean isCorrect = checkWord(lowerCaseWord, theDictionary);
+                        //System.out.println(lowerCaseWord + " is spelled correctly " + isCorrect);
+                        wordlets.add(new Wordlet(word, isCorrect));
 
-
+                    }
+                }
+            }
+            input.close();
+            //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         } catch (IOException e) {
             System.out.println("There was an error in reading or opening the file: " + theFileName);
@@ -109,18 +130,7 @@ public class MisSpellActionThread implements Runnable {
      *
      */
     public boolean checkWord(String word, DictionaryInterface<String, String> theDictionary) {
-        boolean result = false;
-
-        // ADD CODE HERE
-//>>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>        
-
-
-
-
-//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-        return result;
-
+        return theDictionary.contains(word);
     }
 
     private void showLines(LinesToDisplay lines) {
