@@ -99,22 +99,40 @@ public class MisSpellActionThread implements Runnable {
         try {
             // >>>>>>>>>>> ADDED CODE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
             input = new Scanner(new File(theFileName));
-
             while(input.hasNextLine()) {
-                String line = input.nextLine();
-                String[] words = line.split("\\W+"); //Split by non-word characters
+                String line = input.nextLine(); // Read the whole line
 
-                for(String word : words) { //Check each word to see if it is in dictionary
-                    if(!word.isEmpty()) {
-                        String lowerCaseWord = word.toLowerCase();
-                        boolean isCorrect = checkWord(lowerCaseWord, theDictionary);
-                        //System.out.println(lowerCaseWord + " is spelled correctly " + isCorrect);
-                        myLines.addWordlet(new Wordlet(word, isCorrect));
+                // Split the line into segments of words and spaces
+                String[] segments = line.split("(?<=\\s)|(?=\\s)");
 
+                StringBuilder originalTextBuilder = new StringBuilder();
+                for (String segment : segments) {
+                    if (segment.matches("\\s+")) {
+                        // If segment is purely space(s), append it directly
+                        originalTextBuilder.append(segment);
+                    } else {
+                        // Process the non-space segment as a word
+                        String word = segment;
+                        String normalizedWord = word.toLowerCase().replaceAll("\\W", "");
+                        boolean isCorrect = checkWord(normalizedWord, theDictionary);
+
+                        // Append the word to the originalTextBuilder
+                        originalTextBuilder.append(word);
+
+                        // Create and add a Wordlet for the word (or word with preceding spaces) to the current line
+                        Wordlet wordlet = new Wordlet(originalTextBuilder.toString(), isCorrect);
+                        myLines.addWordlet(wordlet);
+                        // Reset the originalTextBuilder for the next word
+                        originalTextBuilder.setLength(0);
                     }
                 }
+
+                // At the end of the line, move to the next line in LinesToDisplay and update the GUI
+                myLines.nextLine();
+                showLines(myLines);
             }
-            input.close();
+
+            input.close(); // Close the file scanner
             //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
         } catch (IOException e) {
